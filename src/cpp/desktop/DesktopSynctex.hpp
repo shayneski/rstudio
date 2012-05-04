@@ -75,7 +75,9 @@ protected:
 
 protected:
    void onClosed(const QString& pdfFile);
-   void onSyncSource(const QString& srcFile, const QPoint& sourceLoc);
+   void onSyncSource(const QString& srcFile,
+                     const QPoint& sourceLoc,
+                     uint timestamp);
 
 public slots:
    

@@ -34,6 +34,7 @@
 #include "DesktopOptions.hpp"
 #include "DesktopBrowserWindow.hpp"
 #include "DesktopWindowTracker.hpp"
+#include "DesktopWindowActivator.hpp"
 #include "DesktopInputDialog.hpp"
 #include "DesktopSecondaryWindow.hpp"
 #include "DesktopRVersion.hpp"

@@ -192,10 +192,10 @@ void EvinceSynctex::onClosed()
 
 void EvinceSynctex::onSyncSource(const QString& srcFile,
                                  const QPoint& srcLoc,
-                                 uint)
+                                 uint timestamp)
 {
    QUrl fileUrl(srcFile);
-   Synctex::onSyncSource(fileUrl.toLocalFile(), srcLoc);
+   Synctex::onSyncSource(fileUrl.toLocalFile(), srcLoc, timestamp);
 }
 
 

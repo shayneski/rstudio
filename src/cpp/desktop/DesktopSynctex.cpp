@@ -21,6 +21,7 @@
 #include <core/system/Process.hpp>
 
 #include "DesktopUtils.hpp"
+#include "DesktopWindowActivator.hpp"
 
 // per-platform synctex implemetnations
 #if defined(Q_WS_MACX)
@@ -163,9 +164,13 @@ void Synctex::onClosed(const QString& pdfFile)
    */
 }
 
-void Synctex::onSyncSource(const QString &srcFile, const QPoint &srcLoc)
+void Synctex::onSyncSource(const QString &srcFile,
+                           const QPoint &srcLoc,
+                           uint timestamp)
 {
-   desktop::raiseAndActivateWindow(pMainWindow_);
+   // raise window -- specify force = true because this call comes in from
+   // another process so we might need to use an extra bag of tricks
+   desktop::raiseAndActivateWindow(pMainWindow_, true, timestamp);
 
    pMainWindow_->onPdfViewerSyncSource(srcFile, srcLoc.x(), srcLoc.y());
 }
