@@ -242,11 +242,15 @@ std::string generateShortenedUuid();
 
 // executable and installation path
 
-Error executablePath(int argc, char * const argv[],
+Error executablePath(int argc, const char * argv[],
                      FilePath* pExecutablePath);
 
+Error executablePath(const char * argv0,
+                     FilePath* pExecutablePath);
+
+
 Error installPath(const std::string& relativeToExecutable,
-                  int argc, char * const argv[],
+                  const char * argv0,
                   FilePath* pInstallationPath);
 
 void fixupExecutablePath(FilePath* pExePath);

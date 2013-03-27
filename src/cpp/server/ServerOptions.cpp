@@ -53,7 +53,7 @@ ProgramStatus Options::read(int argc, char * const argv[])
 
    // compute install path
    FilePath installPath;
-   Error error = core::system::installPath("..", argc, argv, &installPath);
+   Error error = core::system::installPath("..", argv[0], &installPath);
    if (error)
    {
       LOG_ERROR_MESSAGE("Unable to determine install path: "+error.summary());

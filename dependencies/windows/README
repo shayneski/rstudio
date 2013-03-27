@@ -22,8 +22,8 @@ via the CMake installer if the "Add to system path" option was chosen during
 installation). For Qt and MinGW you should ensure that the following 
 additional directories are available on the path:
 
-C:\QtSDK\Desktop\Qt\4.8.0\mingw\bin
-C:\QtSDK\mingw\bin
+C:\Qt\Qt5.0.2\5.0.2\mingw47_32\bin
+C:\Qt\Qt5.0.2\Tools\MinGW\bin
 
 Finally, you should also ensure that your R installation's bin directory is
 on the system path.
@@ -37,11 +37,11 @@ running the following script:
 
 install-dependencies.cmd
 
-NOTE: How to upgrade boost-1.50-win.zip
+NOTE: How to upgrade boost-1.50-win-gcc47.zip
 =============================================================================
 
-boost-1.50-win.zip is a prepackaged set of boost 1.50 windows headers and
-binaries (32 and 64 bit) built for MinGW 4.4. To upgrade to either a new
+boost-1.50-win-gcc47.zip is a prepackaged set of boost 1.50 windows headers and
+binaries (32 and 64 bit) built for MinGW 4.7. To upgrade to either a new
 boost or MinGW version you should download the appropriate boost windows
 source archive, boostrap the boost build system (note that this
 requires MSFT Visual C++) then follow the instructions below 
@@ -71,12 +71,22 @@ After this you can create a new boost-win.zip archive using the contents
 of the C:\boost32 and C:\boost64 directories.
 
 
-NOTE: Getting boost to work with mingw w64
+NOTE: Getting boost to work with mingw64
 =============================================================================
 
 See the following article for general approach/guidelines:
 
 http://sourceforge.net/apps/trac/mingw-w64/wiki/Building%20Boost
+
+In order to build rstudio with boost under win32 we had to apply the 
+following patch (so that boost can correctly detect mingw64 as distinct
+from another mingw distribution:
+
+https://svn.boost.org/trac/boost/changeset/79334
+
+This should be fixed in more recent versions of boost, see:
+
+https://svn.boost.org/trac/boost/ticket/4258
 
 Note that in order to build rstudio with boost under win64 we had to make
 the following additional accomodations:

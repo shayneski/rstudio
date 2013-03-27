@@ -92,7 +92,7 @@ QWebPage* WebPage::createWindow(QWebPage::WebWindowType)
 
          // try to tile the window (but leave pdf window alone
          // since it is so large)
-         if (name != QString::fromAscii("pdf"))
+         if (name != QString::fromUtf8("pdf"))
          {
             // calculate location to move to
 
@@ -141,7 +141,7 @@ void WebPage::javaScriptConsoleMessage(const QString& message, int /*lineNumber*
 
 QString WebPage::userAgentForUrl(const QUrl &url) const
 {
-   return this->QWebPage::userAgentForUrl(url) + QString::fromAscii(" Qt/") + QString::fromAscii(qVersion());
+   return this->QWebPage::userAgentForUrl(url) + QString::fromUtf8(" Qt/") + QString::fromUtf8(qVersion());
 }
 
 bool WebPage::acceptNavigationRequest(QWebFrame*,
@@ -150,13 +150,13 @@ bool WebPage::acceptNavigationRequest(QWebFrame*,
 {
    QUrl url = request.url();
 
-   if (url.toString() == QString::fromAscii("about:blank"))
+   if (url.toString() == QString::fromUtf8("about:blank"))
       return true;
 
-   if (url.scheme() != QString::fromAscii("http")
-       && url.scheme() != QString::fromAscii("https")
-       && url.scheme() != QString::fromAscii("mailto")
-       && url.scheme() != QString::fromAscii("data"))
+   if (url.scheme() != QString::fromUtf8("http")
+       && url.scheme() != QString::fromUtf8("https")
+       && url.scheme() != QString::fromUtf8("mailto")
+       && url.scheme() != QString::fromUtf8("data"))
    {
       qDebug() << url.toString();
       return false;
@@ -165,7 +165,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame*,
    // determine if this is a local request (handle internally only if local)
    std::string host = url.host().toStdString();
    bool isLocal = host == "localhost" || host == "127.0.0.1" ||
-                  url.scheme() == QString::fromAscii("data");
+                  url.scheme() == QString::fromUtf8("data");
 
    if ((baseUrl_.isEmpty() && isLocal) ||
        (url.scheme() == baseUrl_.scheme()
