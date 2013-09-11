@@ -129,7 +129,7 @@ void WebView::keyPressEvent(QKeyEvent* pEv)
    // where the keypad modifier bit is on, so we turn it off.
    QKeyEvent newEv(pEv->type(),    
                    pEv->key(),
-                   modifiers & ~Qt::KeypadModifier,
+                   pEv->modifiers() & ~Qt::KeypadModifier,
                    pEv->text(),
                    pEv->isAutoRepeat(),
                    pEv->count());
