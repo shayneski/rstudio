@@ -15,6 +15,7 @@
 
 #include "DesktopUpdateChecker.hpp"
 
+#include <QUrlQuery>
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -37,17 +38,23 @@ namespace desktop {
 
 QUrl UpdateChecker::checkForUpdatesURL()
 {
-   QUrl url(QString::fromAscii("http://www.rstudio.org/links/check_for_update"));
-   url.addQueryItem(QString::fromAscii("version"), QString::fromAscii(RSTUDIO_VERSION));
+   QUrl url(QString::fromUtf8("http://www.rstudio.org/links/check_for_update"));
+
+   QUrlQuery query;
+   query.addQueryItem(QString::fromUtf8("version"), QString::fromUtf8(RSTUDIO_VERSION));
+
    QString platform;
 #if defined(_WIN32)
-   platform = QString::fromAscii("windows");
+   platform = QString::fromUtf8("windows");
 #elif defined(__APPLE__)
-   platform = QString::fromAscii("mac");
+   platform = QString::fromUtf8("mac");
 #else
-   platform = QString::fromAscii("linux");
+   platform = QString::fromUtf8("linux");
 #endif
-   url.addQueryItem(QString::fromAscii("os"), platform);
+   query.addQueryItem(QString::fromUtf8("os"), platform);
+
+   url.setQuery(query);
+
    return url;
 }
 
@@ -55,9 +62,13 @@ void UpdateChecker::performCheck(bool manuallyInvoked)
 {
    // build URL (specify key-value pair return)
    QUrl url = checkForUpdatesURL();
-   url.addQueryItem(QString::fromAscii("format"), QString::fromAscii("kvp"));
+
+   QUrlQuery query;
+   query.addQueryItem(QString::fromUtf8("format"), QString::fromUtf8("kvp"));
    if (manuallyInvoked)
-      url.addQueryItem(QString::fromAscii("manual"), QString::fromAscii("true"));
+      query.addQueryItem(QString::fromUtf8("manual"), QString::fromUtf8("true"));
+
+   url.setQuery(query);
 
    // download manifest (URL downlader frees itself)
    URLDownloader* pURLDownloader = new URLDownloader(url,
