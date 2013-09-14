@@ -34,10 +34,12 @@ public class DesktopWindowOpener extends WebWindowOpener
       // inspect the url
       boolean hasProto = Pattern.create("^([a-zA-Z]+:)").match(url, 0) != null;
       boolean isAppUrl = url.startsWith(GWT.getHostPageBaseURL());
+      boolean isLocal = url.startsWith("http://localhost") ||
+                        url.startsWith("http://127.0.0.1");
       
       // open externally if we have a protocol and aren't an app url
-      if (hasProto && !isAppUrl)
-      {
+      if (hasProto && !isAppUrl && !isLocal)
+      {   
          Desktop.getFrame().browseUrl(url);
 
          assert options.getCallback() == null;

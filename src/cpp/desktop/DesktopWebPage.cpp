@@ -39,7 +39,7 @@ WebPage::WebPage(QUrl baseUrl, QWidget *parent) :
       baseUrl_(baseUrl),
       navigated_(false)
 {
-   //settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+   settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
    settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
    setNetworkAccessManager(new NetworkAccessManager(sharedSecret, parent));
 }
@@ -171,6 +171,12 @@ bool WebPage::acceptNavigationRequest(QWebFrame*,
        (url.scheme() == baseUrl_.scheme()
         && url.host() == baseUrl_.host()
         && url.port() == baseUrl_.port()))
+   {
+      navigated_ = true;
+      return true;
+   }
+   // handle all local requests internally so shiny apps display in Qt
+   else if (isLocal)
    {
       navigated_ = true;
       return true;
