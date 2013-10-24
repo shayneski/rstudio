@@ -17,15 +17,16 @@ cmake_minimum_required(VERSION 2.8.8)
 
 project(DESKTOP)
 
-# require Qt 5.1.1
-set(QT_VERSION 5.1.1)
+# require Qt 5.2.0
+set(QT_VERSION 5.2.0)
+set(QT_VERSION_SUFFIX "-beta1")
 
 # on unix prefer qtsdk installs over system-level libraries. note this
 # can be overriden by defining QT_QMAKE_EXECUTABLE when invoking cmake
 if(NOT WIN32)
    # prefer rstudio qtsdk install then home qtsdk install
    if(NOT QT_QMAKE_EXECUTABLE)
-      set(QT_VERSION "5.1.1")
+      set(QT_VERSION "5.2.0")
       if(APPLE)
          set(QT_COMPILER "clang_64")
       else()
@@ -36,7 +37,7 @@ if(NOT WIN32)
       if(EXISTS ${QMAKE_QT50_SDK})
          set(QT_QMAKE_EXECUTABLE "${QMAKE_QT50_SDK}/bin/qmake")
       else()
-         set(QMAKE_QT50_SDK "$ENV{HOME}/Qt${QT_VERSION}/${QT_VERSION}/${QT_COMPILER}")
+         set(QMAKE_QT50_SDK "$ENV{HOME}/Qt${QT_VERSION}/${QT_VERSION}${QT_VERSION_SUFFIX}/${QT_COMPILER}")
          if(EXISTS ${QMAKE_QT50_SDK})
             set(QT_QMAKE_EXECUTABLE "${QMAKE_QT50_SDK}/bin/qmake")
          endif()
