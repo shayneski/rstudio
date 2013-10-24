@@ -1,0 +1,29 @@
+Mac
+
+
+- Scrolling in ace extremely slow (fixed by eliminating ace mouse-wheel 3 but note this removes that behavior for windows in Qt4)
+- Bizzaro scrolling in VCS pane for lots of items
+- Bizzaro scrolling in diff window (perhaps it's just cell table scrolling in general)
+- Regression in Qt5: http://tech.roxee.tv/2012/06/13/workarounding-qtwebkit-broken-mousewheel/
+- Workaround described here: https://bugreports.qt-project.org/browse/QTBUG-22269
+- Try other Mac Qt scrolling scenarios
+- Preferences doesn't show up in the Edit menu on the Mac
+- Git push/pull alignment
+- Clipboard doesn't work
+- PDFs don't display
+
+
+
+
+- Cleaner qt_use_modules
+
+
+- Cursor on Linux
+- Linux plastique -> fusion
+- QPlastiqueStyle gone (using Fusion)
+
+
+- Windows: ensure reactivation works with change from winEvent to nativeEvent
+- Windows: slow on initial request in pane
+- Windows: javascript alert 'null' in RcppStrings project on Windows (debug version)
+- Windows: system shutdown causes crash
