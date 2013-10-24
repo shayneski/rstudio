@@ -14,12 +14,13 @@ package org.rstudio.studio.client.workbench.views.viewer;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import org.rstudio.core.client.widget.RStudioFrame;
 import org.rstudio.core.client.widget.Toolbar;
 import org.rstudio.studio.client.common.AutoGlassPanel;
 import org.rstudio.studio.client.common.GlobalDisplay;
 import org.rstudio.studio.client.workbench.commands.Commands;
 import org.rstudio.studio.client.workbench.ui.WorkbenchPane;
-import org.rstudio.studio.client.workbench.views.viewer.ui.ViewerFrame;
 
 public class ViewerPane extends WorkbenchPane implements ViewerPresenter.Display
 {
@@ -37,8 +38,6 @@ public class ViewerPane extends WorkbenchPane implements ViewerPresenter.Display
    {
       Toolbar toolbar = new Toolbar();
       toolbar.addLeftWidget(commands_.viewerPopout().createToolbarButton());
-      toolbar.addLeftSeparator();
-      toolbar.addLeftWidget(commands_.viewerPrint().createToolbarButton());
       
       toolbar.addRightWidget(commands_.viewerClear().createToolbarButton());
       toolbar.addRightWidget(commands_.viewerStop().createToolbarButton());
@@ -50,16 +49,48 @@ public class ViewerPane extends WorkbenchPane implements ViewerPresenter.Display
    @Override 
    protected Widget createMainWidget()
    {
-      frame_ = new ViewerFrame() ;
-      frame_.setUrl("about:blank");
+      frame_ = new RStudioFrame() ;
       frame_.setSize("100%", "100%");
+      navigate(ABOUT_BLANK);
       return new AutoGlassPanel(frame_);
    }
    
    @Override
    public void navigate(String url)
    {
-      frame_.navigate(url);
+      // save the unmodified URL for pop-out
+      unmodifiedUrl_ = url;
+      
+      // append the viewer_pane query parameter
+      if ((unmodifiedUrl_ != null) && !unmodifiedUrl_.equals(ABOUT_BLANK))
+      {
+         // first split into base and anchor
+         String base = new String(unmodifiedUrl_);
+         String anchor = new String();
+         int anchorPos = base.indexOf('#');
+         if (anchorPos != -1)
+         {
+            anchor = base.substring(anchorPos);
+            base = base.substring(0, anchorPos);
+         }
+         
+         // add the query param
+         if (!base.contains("?"))
+            base = base + "?";
+         else
+            base = base + "&";
+         base = base + "viewer_pane=1";
+        
+         // add the anchor back on
+         String viewerUrl = base + anchor;
+         
+         // set the url
+         frame_.setUrl(viewerUrl);
+      }
+      else
+      {
+         frame_.setUrl(unmodifiedUrl_);
+      }
    }
    
    
@@ -70,17 +101,10 @@ public class ViewerPane extends WorkbenchPane implements ViewerPresenter.Display
    }
    
    @Override
-   public void print()
-   {
-      frame_.print();
-   }
-
-   @Override
    public void popout()
    {
-      String url = frame_.getUrl();
-      if (url != null)
-         globalDisplay_.openWindow(url);
+      if (unmodifiedUrl_ != null)
+         globalDisplay_.openWindow(unmodifiedUrl_);
    }
 
    @Override
@@ -88,10 +112,12 @@ public class ViewerPane extends WorkbenchPane implements ViewerPresenter.Display
    {
       String url = frame_.getUrl();
       if (url != null)
-         navigate(url);
+         frame_.setUrl(url);
    }
    
-   private ViewerFrame frame_;
+   private RStudioFrame frame_;
+   private String unmodifiedUrl_;
    private final Commands commands_;
    private final GlobalDisplay globalDisplay_;
+   private static final String ABOUT_BLANK = "about:blank";
 }

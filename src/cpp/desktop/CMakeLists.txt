@@ -77,7 +77,9 @@ list(REMOVE_ITEM MOC_DESKTOP_HEADER_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/DesktopNetworkProxyFactory.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/DesktopGwtCallbackOwner.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/DesktopUtils.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/DesktopNodeWebkit.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/desktop-config.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/node-webkit/RStudioIDE.app/Contents/Resources/app.nw/index.html
 )
 
 if(WIN32)
@@ -97,8 +99,8 @@ if(NOT WIN32)
    )
 endif()
 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/desktop-config.h.in
+                ${CMAKE_CURRENT_BINARY_DIR}/desktop-config.h)
 
 # source files
 set(DESKTOP_SOURCE_FILES
@@ -163,6 +165,11 @@ endif(WIN32)
 if(APPLE)
   set(DESKTOP_SOURCE_FILES ${DESKTOP_SOURCE_FILES}
     DesktopUtilsMac.mm
+    DesktopNodeWebkitMac.mm
+  )
+else()
+  set(DESKTOP_SOURCE_FILES ${DESKTOP_SOURCE_FILES}
+    DesktopNodeWebkit.cpp
   )
 endif()
 
@@ -228,6 +235,7 @@ if(WIN32)
 elseif(APPLE)
    find_library(APPLICATION_SERVICES_LIBRARY NAMES ApplicationServices)
    find_library(COCOA_LIBRARY NAMES Cocoa)
+   find_library(SECURITY_LIBRARY NAMES Security)
 endif(WIN32)
 
 
@@ -293,7 +301,21 @@ else()
       ${QT_LIBRARIES}
       rstudio-core
       ${APPLICATION_SERVICES_LIBRARY}
-      ${COCOA_LIBRARY})
+      ${COCOA_LIBRARY}
+      ${SECURITY_LIBRARY})
+
+   # we also copy the node-webkit platform files into the appropriate spot
+   set(NODE_WEBKIT "${RSTUDIO_DEPENDENCIES_DIR}/common/node-webkit/0.7.5/node-webkit.app/Contents")
+   set(NODE_WEBKIT_DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/node-webkit/RStudioIDE.app/Contents")
+   file(COPY "${NODE_WEBKIT}/Frameworks"
+        DESTINATION ${NODE_WEBKIT_DESTINATION})
+   file(COPY "${NODE_WEBKIT}/Libraries"
+        DESTINATION ${NODE_WEBKIT_DESTINATION})
+   file(COPY "${NODE_WEBKIT}/MacOS/node-webkit"
+        DESTINATION ${NODE_WEBKIT_DESTINATION}/MacOS)
+   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/node-webkit/Info.plist.in
+                  ${NODE_WEBKIT_DESTINATION}/Info.plist)
+
 
 endif()
 
@@ -352,6 +374,8 @@ if(RSTUDIO_BUNDLE_QT)
             \"\${CMAKE_INSTALL_PREFIX}/${QTPLUGINS_DEST_DIR}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
           include(BundleUtilities)
           file(REMOVE \"\${CMAKE_INSTALL_PREFIX}/RStudio.app/Contents/MacOS/rsession\")
+          file(REMOVE \"\${CMAKE_INSTALL_PREFIX}/RStudio.app/Contents/MacOS/rserver\")
+          file(REMOVE \"\${CMAKE_INSTALL_PREFIX}/RStudio.app/Contents/MacOS/rserver-pam\")
           fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
           ")
 
@@ -414,6 +438,12 @@ if(APPLE)
                     DESTINATION ${RSTUDIO_INSTALL_BIN})
 endif()
 
+# install node-webkit on apple
+if(APPLE)
+   install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/node-webkit/RStudioIDE.app"
+           DESTINATION RStudio.app/Contents/Frameworks
+           USE_SOURCE_PERMISSIONS)
+endif()
 
 # install desktop integration files on linux
 if(RSTUDIO_INSTALL_FREEDESKTOP)

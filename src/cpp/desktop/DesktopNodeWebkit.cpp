@@ -1,5 +1,5 @@
 /*
- * config.h.in
+ * DesktopNodeWebkit.cpp
  *
  * Copyright (C) 2009-12 by RStudio, Inc.
  *
@@ -13,9 +13,18 @@
  *
  */
 
-#define RSTUDIO_VERSION "${CPACK_PACKAGE_VERSION}"
+#include "DesktopNodeWebkit.hpp"
 
-#define RSTUDIO_R_MAJOR_VERSION_REQUIRED ${RSTUDIO_R_MAJOR_VERSION_REQUIRED}
-#define RSTUDIO_R_MINOR_VERSION_REQUIRED ${RSTUDIO_R_MINOR_VERSION_REQUIRED}
-#define RSTUDIO_R_PATCH_VERSION_REQUIRED ${RSTUDIO_R_PATCH_VERSION_REQUIRED}
+namespace desktop {
 
+bool useNodeWebkit()
+{
+   return false;
+}
+
+int runWithNodeWebkit()
+{
+   return 0;
+}
+
+} // namespace desktop

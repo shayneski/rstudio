@@ -595,6 +595,11 @@ void handleClientInit(const boost::function<void()>& initFunction,
    sessionInfo["debug_state"] = modules::breakpoints::debugStateAsJson();
    sessionInfo["error_state"] = modules::errors::errorStateAsJson();
 
+   // send whether we should show the user identity
+   sessionInfo["show_identity"] =
+           (options.programMode() == kSessionProgramModeServer) &&
+           options.showUserIdentity();
+
    // send response  (we always set kEventsPending to false so that the client
    // won't poll for events until it is ready)
    json::JsonRpcResponse jsonRpcResponse ;
@@ -1091,14 +1096,33 @@ bool canSuspend(const std::string& prompt)
 
 bool isTimedOut(const boost::posix_time::ptime& timeoutTime)
 {
+   using namespace boost::posix_time;
+
    // never time out in desktop mode
    if (session::options().programMode() == kSessionProgramModeDesktop)
       return false;
 
+   // check for an client disconnection based timeout
+   int disconnectedTimeoutMinutes = options().disconnectedTimeoutMinutes();
+   if (disconnectedTimeoutMinutes > 0)
+   {
+      ptime lastEventConnection =
+         httpConnectionListener().eventsConnectionQueue().lastConnectionTime();
+      if (!lastEventConnection.is_not_a_date_time())
+      {
+         if ( (lastEventConnection + minutes(disconnectedTimeoutMinutes)
+               < second_clock::universal_time()) )
+         {
+            return true;
+         }
+      }
+   }
+
+   // check for a foreground inactivity based timeout
    if (timeoutTime.is_not_a_date_time())
       return false;
    else
-      return boost::posix_time::second_clock::universal_time() > timeoutTime;
+      return second_clock::universal_time() > timeoutTime;
 }
 
 boost::posix_time::ptime timeoutTimeFromNow()

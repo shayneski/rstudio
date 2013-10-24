@@ -266,13 +266,13 @@ public abstract class
    public abstract AppCommand helpUsingRStudio();
    public abstract AppCommand helpKeyboardShortcuts();
    public abstract AppCommand showRequestLog();
+   public abstract AppCommand showWebkitDevtools();
    public abstract AppCommand logFocusedElement();
    public abstract AppCommand debugDumpContents();
    public abstract AppCommand debugImportDump();
    public abstract AppCommand refreshSuperDevMode();
    
    // Viewer
-   public abstract AppCommand viewerPrint();
    public abstract AppCommand viewerPopout();
    public abstract AppCommand viewerRefresh();
    public abstract AppCommand viewerStop();

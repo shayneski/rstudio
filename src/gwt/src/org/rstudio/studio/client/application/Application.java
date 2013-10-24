@@ -318,6 +318,13 @@ public class Application implements ApplicationEventHandlers
          }
       });
    }
+   
+   @Handler
+   public void onShowWebkitDevtools()
+   {
+      if (NodeWebkit.isNodeWebkit())
+         NodeWebkit.showDevtools();
+   }
 
    @Handler
    public void onLogFocusedElement()
@@ -434,7 +441,10 @@ public class Application implements ApplicationEventHandlers
          }
          else
          {
-            view_.showApplicationQuit();
+            if (NodeWebkit.isNodeWebkit())
+               NodeWebkit.closeWindow();
+            else
+               view_.showApplicationQuit();
          }
       }
    }
@@ -600,7 +610,11 @@ public class Application implements ApplicationEventHandlers
       // hide the agreement menu item if we don't have one
       if (!session_.getSessionInfo().hasAgreement())
          commands_.rstudioAgreement().setVisible(false);
-         
+        
+      // only show webkit devtols for node webkit
+      if (!NodeWebkit.isNodeWebkit())
+         commands_.showWebkitDevtools().remove();
+      
       // show workbench
       view_.showWorkbenchView(wb.getMainView().asWidget());
       
@@ -609,6 +623,19 @@ public class Application implements ApplicationEventHandlers
       {
          commands_.zoomIn().remove();
          commands_.zoomOut().remove();
+      }
+      
+      // NodeWebkit specific initialization
+      if (NodeWebkit.isNodeWebkit())
+      {
+         // remove inappropriate commands
+         commands_.uploadFile().remove();
+         commands_.exportFiles().remove();
+         commands_.updateCredentials().remove();
+         commands_.copyPlotToClipboard().remove();
+         
+         // close handler for quit prompting
+         NodeWebkit.registerCloseHandler();
       }
       
       // toolbar (must be after call to showWorkbenchView because

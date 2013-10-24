@@ -36,6 +36,7 @@
 #include <core/system/PosixSystem.hpp>
 #include <core/system/FileMode.hpp>
 
+#include <server/ServerOptions.hpp>
 
 namespace server {
 namespace auth {
@@ -183,7 +184,13 @@ void set(const std::string& name,
          const std::string& path,
          http::Response* pResponse)
 {
-   set(name, value, request, validDuration, boost::none, path, pResponse);
+   secure_cookie::set(name,
+                      value,
+                      request,
+                      validDuration,
+                      boost::none,
+                      path,
+                      pResponse);
 }
 
 void set(const std::string& name,
@@ -226,6 +233,14 @@ void remove(const http::Request& request,
 
 Error initialize()
 {
+   // for server in desktop we bypass this mechanism entirely
+   // (to get around cross-session file permission problems)
+   if (server::options().serverOnDesktop())
+   {
+      s_secureCookieKey = "F5D5F89FFD38435188B724DA2655DA6D";
+      return Success();
+   }
+
    // determine path to use for secure cookie key file
    FilePath secureCookieKeyPath;
    if (core::system::effectiveUserIsRoot())

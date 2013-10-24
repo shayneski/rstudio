@@ -98,8 +98,16 @@ SEXP rs_viewer(SEXP urlSEXP, SEXP heightSEXP)
          if (filePath.isWithin(tempDir) && r::util::hasRequiredVersion("2.14"))
          {
             std::string path = filePath.relativePath(tempDir);
-            boost::format fmt("http://localhost:%1%/session/%2%");
-            url = boost::str(fmt % module_context::rLocalHelpPort() % path);
+            if (session::options().programMode() == kSessionProgramModeDesktop)
+            {
+               boost::format fmt("http://localhost:%1%/session/%2%");
+               url = boost::str(fmt % module_context::rLocalHelpPort() % path);
+            }
+            else
+            {
+               boost::format fmt("session/%1%");
+               url = boost::str(fmt % path);
+            }
             viewerNavigate(url, height);
          }
          else
@@ -109,6 +117,30 @@ SEXP rs_viewer(SEXP urlSEXP, SEXP heightSEXP)
       }
       else
       {
+         // in desktop mode make sure we have the right version of httpuv
+         if (options().programMode() == kSessionProgramModeDesktop)
+         {
+            if (module_context::isPackageInstalled("httpuv"))
+            {
+               // version check
+               bool hasRequiredVersion = false;
+               Error error = r::exec::evaluateString(
+                ".rs.getPackageVersion('httpuv') >= 1.2", &hasRequiredVersion);
+               if (error)
+                  LOG_ERROR(error);
+
+               // print warning if necessary
+               if (!hasRequiredVersion)
+               {
+                  module_context::consoleWriteError("\nWARNING: To run "
+                    "applications within the RStudio Viewer pane you need to "
+                    "install the latest version of the httpuv package from "
+                    "CRAN (version 1.2 or higher is required).\n\n");
+               }
+            }
+         }
+
+         // navigate the viewer
          viewerNavigate(url, height);
       }
    }
